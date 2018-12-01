@@ -1,5 +1,5 @@
 {
-  "name": "ethereum-inbox",
+  "name": "ethereum-lottery",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jackdixonryan/ethereum-inbox.git"
+    "url": "https://github.com/jackdixonryan/ethereum-lottery"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jackdixonryan/ethereum-inbox/issues"
+    "url": "https://github.com/jackdixonryan/ethereum-lottery/issues"
   },
-  "homepage": "https://github.com/jackdixonryan/ethereum-inbox#readme",
+  "homepage": "https://github.com/jackdixonryan/ethereum-lottery#readme",
   "dependencies": {
     "ganache-cli": "^6.0.3",
     "mocha": "^4.0.1",
