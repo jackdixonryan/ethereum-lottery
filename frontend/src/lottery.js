@@ -76,4 +76,8 @@ const abi = [
   }
 ];
 
-export default new web3.eth.Contract(abi, address);
+let result;
+if (web3 === false) result = false;
+else result = new web3.eth.Contract(abi, address);
+
+export default result;

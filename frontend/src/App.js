@@ -1,24 +1,34 @@
 import React, { Component } from 'react';
+import styled from 'styled-components';
+
 import web3 from './web3.js';
 import lottery from './lottery';
-import { timingSafeEqual } from 'crypto';
-import { runInThisContext } from 'vm';
 
 class App extends Component {
+
   state = {
     manager: '',
     players: [],
     balance: '',
     value: '',
     message: '',
+    currentUser: '',
   }
 
   async componentDidMount () {
-    const manager = await lottery.methods.manager().call();
-    const players = await lottery.methods.returnAllPlayers().call();
-    const balance = await web3.eth.getBalance(lottery.options.address);
+    if (web3 !== false) {
+      web3.eth.getAccounts((err, acc) => {
+        if (err != null) console.log("An error occurred:", err);
+        else if (acc.length === 0) console.log("User not logged in,");
+        else console.log("user is logged in!");
+      });
 
-    this.setState({ manager, players, balance });
+      const manager = await lottery.methods.manager().call();
+      const players = await lottery.methods.returnAllPlayers().call();
+      const balance = await web3.eth.getBalance(lottery.options.address);
+
+      this.setState({ manager, players, balance });
+    }
   }
 
   handleSubmit = async (event) => {
@@ -39,28 +49,45 @@ class App extends Component {
     });
   }
   render() {
-    web3.eth.getAccounts();
 
-    return (
-      <div className="App">
-        <h1>ETHER LOTTERY!!</h1>
-        <p>This contract is managed by {this.state.manager}</p>
-        <p>There are currently {this.state.players.length} people entered into the lottery, competing to win {web3.utils.fromWei(this.state.balance, 'ether')} ether!</p>
-        <hr/>
+    const Banner = styled.div`
+      height: 750px; 
+      width: 100%;
+      z-index: 20000;
+      background-color: blue;
+      color: white;
+      position: absolute;
+      margin-top: -20px;
+    `;
 
-        <div>
-          <label htmlFor="amount">Amount of ether to enter:</label>
-          <input
-            type="text"
-            onChange={event => this.setState({ value: event.target.value })}
-          />
-          <button onClick={this.handleSubmit}>Enter with {this.state.value} Ether</button>
+    if (web3 === false) {
+      return (
+        <Banner>
+          <h1>You need the Metamask browser extention to view a DApp. Please install it to continue.</h1>
+        </Banner>
+      )
+    } else {
+      return (
+        <div className="App">
+          <h1>ETHER LOTTERY!!</h1>
+          <p>This contract is managed by {this.state.manager}</p>
+          <p>There are currently {this.state.players.length} people entered into the lottery, competing to win {web3.utils.fromWei(this.state.balance, 'ether')} ether!</p>
+          <hr/>
+
+          <div>
+            <label htmlFor="amount">Amount of ether to enter:</label>
+            <input
+              type="text"
+              onChange={event => this.setState({ value: event.target.value })}
+            />
+            <button onClick={this.handleSubmit}>Enter with {this.state.value} Ether</button>
+          </div>
+
+          <h3>{this.state.message}</h3>
+          <h3>{this.state.currentUser}</h3>
         </div>
-
-        <h3>{this.state.message}</h3>
-
-      </div>
-    );
+      );
+    }
   }
 }
 
