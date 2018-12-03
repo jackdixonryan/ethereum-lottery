@@ -77,7 +77,10 @@ const abi = [
 ];
 
 let result;
+// if the web3 module is nothing more than false (see the comments in the web3 file) then forward that false along.
 if (web3 === false) result = false;
+
+// Otherwise, continue apace by using the abi and address to create the contract.
 else result = new web3.eth.Contract(abi, address);
 
 export default result;

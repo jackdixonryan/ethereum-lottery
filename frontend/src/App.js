@@ -15,6 +15,7 @@ class App extends Component {
     value: '',
     message: '',
     currentUser: '',
+    managerMessage: '',
   }
 
   // Our mount function is, confusingly, async for the purpose of calling our web3 functions without a bunch of callbacks and promises.
@@ -64,7 +65,7 @@ class App extends Component {
       value: web3.utils.toWei(this.state.value, 'ether')
     })
     // Then we return a message telling them that they're transaction was successful.
-    .then(res => {
+    .then(() => {
       this.setState({ message: "You are entered into the lottery! Good luck!!!!" });
     })
     // There is another case, however, where the user rejects the transaction for any number of reasons, or alt'ly experiences an error, in which case we send an error message. 
@@ -74,8 +75,19 @@ class App extends Component {
   }
 
   // A function for selecting a winner of the lottery...
-  selectWinner() {
+  selectWinner = async () => {
 
+    this.setState({ managerMessage: "Doing some stuff, give me a hot second..."});
+
+    await lottery.methods.pickWinner().send({
+      from: this.state.currentUser
+    })
+    .then(() => {
+      this.setState({ managerMessage: `Someone has been picked. But unless the whole contract is rewritten we can't figure out who it is.`});
+    })
+    .catch(err => {
+      this.setState({ managerMessage: "This transaction was denied. Try again."});
+    });
   }
 
   // Now for the render!
@@ -94,48 +106,103 @@ class App extends Component {
       margin-top: -20px;
     `;
 
+    // Styles the entire page with a fairly boilerplate background.
+    const App = styled.div`
+      margin: 0px;
+      padding: 0px;
+      background: linear-gradient(white, black);
+      height: 800px;
+    `;
+
+    const MainContent = styled.div`
+      width: 50%;
+      margin: 0 auto;
+      background: linear-gradient(white, whitesmoke);
+      text-align: center;
+      position: relative;
+      top: 150px;
+      padding: 30px;
+      border-radius: 10px;
+      img {
+        width: 60%;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+      p {
+        line-height: 1.5;
+      }
+      button {
+        outline: none;
+        padding: 10px;
+        background: none;
+        border: 1px black solid;
+        border-radius: 3px;
+        margin: 10px; 
+      }
+    `;
+
     // RENDER FUNCTIONS============================================
 
     // this one only displays the selectWinner function if the currentUser's public key is equivalent to that of the manager.
     const IsManager = () => {
       if (this.state.currentUser === this.state.manager) {
-        return <button onClick={this.selectWinner}>Select a Winner!</button>
+        return (
+        <div>
+          <button onClick={this.selectWinner}>Select a Winner!</button>
+          <p>{this.state.managerMessage}</p>
+        </div>
+      )
       } else {
         return <p>A manager will select a winner. Stay posted!</p>
       }
     }
 
-    // The rest of our render is ALL within this conditional. SO, if the web3 import is set to my hardcoded check for false (that is, if the user doesn't have metamask, the site will only return a banner telling the user they need it.)
-    if (web3 === false) {
-      return (
-        <Banner>
-          <h1>You need the Metamask browser extention to view a DApp. Please install it to continue.</h1>
-        </Banner>
-      )
-    // But, if metamask works, the mounted stuff all runs and the actual page renders. From here on out, TBH, it's pretty self-explanatory.
-    } else {
-      return (
-        <div className="App">
-          <h1>ETHER LOTTERY!!</h1>
+    const NoMetamask = () => {
+      if (web3 === false) {
+        return (
+          <Banner>
+            <h1>You need the Metamask browser extention to view a DApp. Please install it to continue.</h1>
+          </Banner>
+        )
+      } else {
+        return <div></div>
+      } 
+    }
+    
+    return (
+      <App>
+        <NoMetamask/>
+        <MainContent>
+          <img src="https://www.ethereum.org/images/logos/ETHEREUM-LOGO_PORTRAIT_Black_small.png" alt="ethereum-logo" />
+          <h1>lottery</h1>
           <p>This contract is managed by {this.state.manager}</p>
-          <p>There are currently {this.state.players.length} people entered into the lottery, competing to win {web3.utils.fromWei(this.state.balance, 'ether')} ether!</p>
           <hr/>
+          <p>
+            There are currently {this.state.players.length} people entered into the lottery, competing to win {web3.utils.fromWei(this.state.balance, "ether")} ether!
+          </p>
+          <hr />
 
           <div>
             <label htmlFor="amount">Amount of ether to enter:</label>
-            <input
-              type="text"
-              onChange={event => this.setState({ value: event.target.value })}
+            <input 
+              type="text" 
+              value={this.state.value}
+              onChange={event => this.setState({value: event.target.value})}
             />
-            <button onClick={this.handleSubmit}>Enter with {this.state.value} Ether</button>
+            <button onClick={this.handleSubmit}>
+              Enter with {this.state.value} Ether
+            </button>
           </div>
 
           <h3>{this.state.message}</h3>
           {/* This here is the conditional button for managers to select a winner. */}
           <IsManager />
-        </div>
-      );
-    }
+        </MainContent>
+      </App>
+    );
   }
 }
 
