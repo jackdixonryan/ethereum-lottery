@@ -169,6 +169,7 @@ class App extends Component {
       }
     }
 
+    // Moved this statement down here to dodge the conditional render, see if that fixed our issue with the form field deselecting but it did not, and yet, I think I like this scheme bewtter than having the page's content all live in a conditional render.
     const NoMetamask = () => {
       if (web3 === false) {
         return (
