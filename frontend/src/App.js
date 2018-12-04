@@ -16,7 +16,7 @@ class App extends Component {
     message: '',
     currentUser: '',
     managerMessage: '',
-  }
+  };
 
   // Our mount function is, confusingly, async for the purpose of calling our web3 functions without a bunch of callbacks and promises.
   async componentDidMount () {
@@ -128,8 +128,9 @@ class App extends Component {
         margin: 0 auto;
       }
       h1 {
-        font-size: 20px;
+        font-size: 30px;
         margin-bottom: 10px;
+        font-family: "Poiret One", sans-serif;
       }
       p {
         line-height: 1.5;
@@ -140,7 +141,15 @@ class App extends Component {
         background: none;
         border: 1px black solid;
         border-radius: 3px;
-        margin: 10px; 
+        margin: 10px;
+        cursor: pointer;
+        font-family: "Poiret One", sans-serif;
+        font-size: 30px;
+      }
+      input {
+        font-size: 20px;
+        padding: 10px;
+        font-family: "Poiret One", sans-serif;
       }
     `;
 
@@ -150,13 +159,13 @@ class App extends Component {
     const IsManager = () => {
       if (this.state.currentUser === this.state.manager) {
         return (
-        <div>
-          <button onClick={this.selectWinner}>Select a Winner!</button>
-          <p>{this.state.managerMessage}</p>
-        </div>
-      )
+          <div>
+            <button onClick={this.selectWinner}>Select a Winner!</button>
+            <p>{this.state.managerMessage}</p>
+          </div>
+        )
       } else {
-        return <p>A manager will select a winner. Stay posted!</p>
+        return <div></div>
       }
     }
 
@@ -174,7 +183,7 @@ class App extends Component {
     
     return (
       <App>
-        <NoMetamask/>
+        <NoMetamask />
         <MainContent>
           <img src="https://www.ethereum.org/images/logos/ETHEREUM-LOGO_PORTRAIT_Black_small.png" alt="ethereum-logo" />
           <h1>lottery</h1>
@@ -186,7 +195,6 @@ class App extends Component {
           <hr />
 
           <div>
-            <label htmlFor="amount">Amount of ether to enter:</label>
             <input 
               type="text" 
               value={this.state.value}
